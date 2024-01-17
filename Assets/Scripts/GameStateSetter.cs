@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GameStateSetter : MonoBehaviour
 {
-    struct GridData
+    public struct GridData
     {
         public bool northExit;
         public bool southExit;
@@ -12,14 +12,20 @@ public class GameStateSetter : MonoBehaviour
         public bool westExit;
         public bool containsItem;
         public bool containsGoal;
+        public int hasMonster;
+        public int monsterHealth;
     }
 
     GridData[,] grid = new GridData[3, 3];
     Vector2Int coordinates = new Vector2Int(0,0);
 
+    public int playerHealth = 10; // TODO: don't make public
+    public bool hasImportantItem = false;
+
     // Start is called before the first frame update
     void Start()
     {
+        // clear it all
         for (int i = 0; i < grid.GetLength(0); i++)
         {
             for (int j = 0; j < grid.GetLength(1); j++)
@@ -30,6 +36,8 @@ public class GameStateSetter : MonoBehaviour
                 grid[i, j].westExit = false;
                 grid[i, j].containsItem = false;
                 grid[i, j].containsGoal = false;
+                grid[i, j].hasMonster = 0;
+                grid[i, j].monsterHealth = 0;
             }
         }
 
@@ -37,6 +45,8 @@ public class GameStateSetter : MonoBehaviour
         grid[0, 0].southExit = true;
         grid[0, 1].westExit = true;
         grid[0, 1].southExit = true;
+        grid[0, 1].hasMonster = 1;
+        grid[0, 1].monsterHealth = 5;
         grid[1, 0].northExit = true;
         grid[1, 0].eastExit = true;
         grid[1, 1].northExit = true;
@@ -68,6 +78,11 @@ public class GameStateSetter : MonoBehaviour
         if(grid[coordinates.x, coordinates.y].containsGoal)
         {
             description += "Game goal is here. ";
+        }
+
+        if(grid[coordinates.x, coordinates.y].hasMonster > 0)
+        {
+            description += "Level " + grid[coordinates.x, coordinates.y].hasMonster + " monster is here. ";
         }
 
         description += "Exits available are";
@@ -106,6 +121,11 @@ public class GameStateSetter : MonoBehaviour
 
         description += "*";
         return description;
+    }
+
+    public GridData GetCurrentLocationData()
+    {
+        return grid[coordinates.x, coordinates.y];
     }
 
     public string MovePlayer(string direction)

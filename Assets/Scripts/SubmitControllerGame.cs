@@ -76,10 +76,58 @@ public class SubmitControllerGame : MonoBehaviour
         }
         else if(response[0] == '*')
         {
-            Debug.Log("Got direction");
-            string gridInfo = gameState.MovePlayer(response);
-            Debug.Log(gridInfo);
-            openAIGame.submitUserMessage(gridInfo);
+            Debug.Log("Got instuction from AI");
+            if (response.ToLower().Contains("fight"))
+            {
+                openAIGame.submitUserMessage("*the monster was deafeated*");
+            }
+            else if (response.ToLower().Contains("inventory"))
+            {
+                string inventory = "*contents of inventory: level 1 weapon, healing item";
+                if(gameState.hasImportantItem)
+                {
+                    inventory += ", important item";
+                }
+                inventory += "*";
+                openAIGame.submitUserMessage(inventory);
+            }
+            else if (response.ToLower().Contains("got item"))
+            {
+                if(gameState.GetCurrentLocationData().containsItem)
+                {
+                    openAIGame.submitUserMessage("*player obtains item*");
+                    gameState.hasImportantItem = true;
+                    // TODO: need to set that item no longer at this location
+                }
+                else
+                {
+                    openAIGame.submitUserMessage("*item is not at this location*");
+                }
+            }
+            else if (response.ToLower().Contains("use goal"))
+            {
+                if(gameState.GetCurrentLocationData().containsGoal)
+                {
+                    if(gameState.hasImportantItem)
+                    {
+                        openAIGame.submitUserMessage("*player has won the game*");
+                    }
+                    else
+                    {
+                        openAIGame.submitUserMessage("*player is missing item to use goal*");
+                    }
+                }
+                else
+                {
+                    openAIGame.submitUserMessage("*the goal is not in this area*");
+                }
+            }
+            else
+            {
+                string gridInfo = gameState.MovePlayer(response);
+                Debug.Log(gridInfo);
+                openAIGame.submitUserMessage(gridInfo);
+            }
         }
         else
         {

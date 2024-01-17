@@ -1077,7 +1077,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f1a0f211fc1b7b49bf751565f3cdabb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  style: 16-bit pixel art
+  style: 
   image: {fileID: 1680787069}
   getter: {fileID: 751084117}
 --- !u!4 &1003018723
@@ -1245,7 +1245,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07acf92a1ed2bd245bf9d65baa4abd33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  model: gpt-3.5-turbo
+  model: gpt-4-1106-preview
   startInstruction: 'You are now a text adventure prompt for a game called Infinite
     Adventure. Before your instructions to the user, put in brackets [] an AI image
     generator prompt for whatever you are about to describe. You should do this for

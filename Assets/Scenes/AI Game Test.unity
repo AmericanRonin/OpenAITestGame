@@ -393,14 +393,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 0}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -481,6 +481,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06a553e7067cb454b9c98216e7dc18cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerHealth: 10
+  hasImportantItem: 0
 --- !u!4 &316748913
 Transform:
   m_ObjectHideFlags: 0
@@ -600,7 +602,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -879,7 +881,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1084,7 +1086,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f1a0f211fc1b7b49bf751565f3cdabb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  style: pixel art
+  style: 
   image: {fileID: 1680787069}
   getter: {fileID: 1611787486}
 --- !u!4 &1003018723
@@ -1252,7 +1254,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07acf92a1ed2bd245bf9d65baa4abd33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  model: gpt-3.5-turbo
+  model: gpt-4-1106-preview
   startInstruction: 'You are now a text adventure prompt for a game called Infinite
     Adventure. I will give you the skeleton of the boundaries of the game and input
     from the player, and it will be up to you to define the game and respond to the
@@ -1262,9 +1264,9 @@ MonoBehaviour:
     the players is in a forest or a cave or a castle, etc., and what the special
     item or character is).  This part is very important: When you feel the player
     has moved to another area, respond only with the direction the player has moved
-    surrounded in astericks, e.g.,  *east*  and then wait for more instructions from
+    surrounded in asterisks, e.g.,  *east*  and then wait for more instructions from
     me about the new area before describing it for the player. Your response to me
-    should be the direction surrounded in astericks and nothing else. If the player
+    should be the direction surrounded by asterisks and nothing else. If the player
     tries to go in a direction I didn''t tell you was available, come up with a reason
     the player can''t go that direction.  Further instructions from me (such as area
     descriptions) will also be enclosed in asterisks. Anything not in asterisks is
@@ -1275,8 +1277,31 @@ MonoBehaviour:
     monster there*  You should respond with something like:  You are in a dark forest
     with trees looming all about. By a small shack nearby stands a fearsome goblin
     staring at you. Beyond the goblin you can see a path through the trees to the
-    north.  --  Here is the first area description (others will look like this): 
-    *Area 0,0: Exits available are south and east.*'
+    north.  If there is a monster at the location, I will say what level it is (such
+    as Level 1) as you come up with a monster appropriate for the setting. Do not
+    tell the player the monster level; that level is to help you know how fearsome
+    to make the monster (with Level 1 being the weakest).  If the player says it
+    wants to fight or attack the monster or anything similar, respond with *fight*
+    in asterisks and I''ll tell you the result of the attack, e.g.,  You say: *fight* 
+    And I''ll respond: *the monster lost 3 of 10 hit points and attacked the player,
+    damaging him for 2 of 10 hit points*  And then you describe that to the player
+    using your own language.  Never tell the player the numbers (such as "it''s a
+    Level 1 monster" or "the monster lost 3 hit points"). That''s simply for you
+    to help in the description. For instance, if I tell you the monster lost one
+    hit point out of ten, replay to the player, "The monster received a slight wound."
+    And if you are told a Level 1 monster is present, pick a small monster that fits
+    the scenario (such as a little alien bug if it''s scifi).  If the player asks
+    to check his inventory, respond to me with *inventory* and I will tell you what
+    the player has in vague terms and you come up with terms for it that fits the
+    scenario.  The goal of the game is to get the important item and use it on the
+    goal (it will be up to you to determine what that important item is and what
+    the goal is based on the game setting). I will tell you when the player is in
+    the area with the object and the area with the goal.  If the player asks to pick
+    up the important item, tell me *got item* in astericks so I can record that and
+    wait for a response before telling the player anything else.  If the player tries
+    to interact with the goal, tell me *use goal* in astericks and wait for my response
+    before telling the player what happens.  --  Here is the first area description
+    (others will look like this):  *Area 0,0: Exits available are south and east.* '
   showFirst: 1
   getter: {fileID: 1611787486}
 --- !u!4 &1373171926
@@ -1883,7 +1908,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07acf92a1ed2bd245bf9d65baa4abd33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  model: gpt-3.5-turbo
+  model: gpt-4-1106-preview
   startInstruction: 
   showFirst: 0
   getter: {fileID: 1611787486}
@@ -1986,8 +2011,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 20
+  m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -2085,11 +2110,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 800, y: 600}
-  m_ScreenMatchMode: 0
+  m_ScreenMatchMode: 1
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
@@ -2108,7 +2133,7 @@ Canvas:
   m_RenderMode: 1
   m_Camera: {fileID: 519420031}
   m_PlaneDistance: 100
-  m_PixelPerfect: 0
+  m_PixelPerfect: 1
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0

@@ -46,10 +46,10 @@ public class DALLEImageGetter : MonoBehaviour
         Dictionary<string, object> aiParams = new Dictionary<string, object>();
         aiParams.Add("model", "image-alpha-001");
         aiParams.Add("prompt", "a dragon");
-        aiParams.Add("size", "1024x1024");
+        aiParams.Add("size", "1792x1024"); // "1024x1024");
         aiParams.Add("response_format", "url");
 
-        string jsonString = "{\"model\":\"image-alpha-001\",\"prompt\":\"" + fullPrompt + "\",\"size\":\"1024x1024\",\"response_format\":\"url\"}";
+        string jsonString = "{\"model\":\"dall-e-3\",\"prompt\":\"" + fullPrompt + "\",\"size\":\"1792x1024\",\"response_format\":\"url\"}";
         UnityWebRequest request = new UnityWebRequest(apiUrl, "POST");
         request.SetRequestHeader("Content-Type", "application/json");
         request.SetRequestHeader("Authorization", "Bearer " + apiKey);
