@@ -14,6 +14,7 @@ public class GameStateSetter : MonoBehaviour
         public bool containsGoal;
         public int hasMonster;
         public int monsterHealth;
+        public int monsterBlocks;
     }
 
     GridData[,] grid = new GridData[3, 3];
@@ -38,6 +39,7 @@ public class GameStateSetter : MonoBehaviour
                 grid[i, j].containsGoal = false;
                 grid[i, j].hasMonster = 0;
                 grid[i, j].monsterHealth = 0;
+                grid[i, j].monsterBlocks = 0;
             }
         }
 
@@ -47,6 +49,7 @@ public class GameStateSetter : MonoBehaviour
         grid[0, 1].southExit = true;
         grid[0, 1].hasMonster = 1;
         grid[0, 1].monsterHealth = 5;
+        grid[0, 1].monsterBlocks = 2;
         grid[1, 0].northExit = true;
         grid[1, 0].eastExit = true;
         grid[1, 1].northExit = true;
@@ -94,20 +97,45 @@ public class GameStateSetter : MonoBehaviour
 
     public string GetCurrentLocation()
     {
+        GridData currentLoc = GetCurrentLocationData();
+
         string description = "*Area " + coordinates.x + "." + coordinates.y + ": ";
 
-        if(grid[coordinates.x, coordinates.y].containsItem)
+        if(currentLoc.containsItem)
         {
             description += "Important item is here. ";
         }
-        if(grid[coordinates.x, coordinates.y].containsGoal)
+        if(currentLoc.containsGoal)
         {
             description += "Game goal is here. ";
         }
 
-        if(grid[coordinates.x, coordinates.y].hasMonster > 0)
+        if(currentLoc.hasMonster > 0)
         {
-            description += "Level " + grid[coordinates.x, coordinates.y].hasMonster + " monster is here. ";
+            description += "Level " + currentLoc.hasMonster + " monster is here";
+            if(currentLoc.monsterBlocks > 0 && currentLoc.monsterBlocks <= 4)
+            {
+                description += " and blocks the ";
+                switch(currentLoc.monsterBlocks)
+                {
+                    case 1:
+                        description += "north";
+                        break;
+                    case 2:
+                        description += "south";
+                        break;
+                    case 3:
+                        description += "east";
+                        break;
+                    case 4:
+                        description += "west";
+                        break;
+                }
+
+                description += " exit";
+            }
+
+            description += ". ";
         }
 
         description += "Exits available are";
@@ -126,6 +154,14 @@ public class GameStateSetter : MonoBehaviour
             description += " south";
             previousExit = true;
         }
+        if (grid[coordinates.x, coordinates.y].eastExit)
+        {
+            if (previousExit)
+            {
+                description += " and";
+            }
+            description += " east";
+        }
         if (grid[coordinates.x, coordinates.y].westExit)
         {
             if (previousExit)
@@ -134,14 +170,6 @@ public class GameStateSetter : MonoBehaviour
             }
             description += " west";
             previousExit = true;
-        }
-        if (grid[coordinates.x, coordinates.y].eastExit)
-        {
-            if (previousExit)
-            {
-                description += " and";
-            }
-            description += " east";
         }
 
         description += "*";
@@ -155,11 +183,23 @@ public class GameStateSetter : MonoBehaviour
 
     public string MovePlayer(string direction)
     {
-        if(direction.ToLower().Contains("north"))
+        GridData currentLoc = GetCurrentLocationData();
+        
+        // monster could be blocking movement
+        if(currentLoc.monsterBlocks > 0 && currentLoc.hasMonster > 0 && currentLoc.monsterHealth > 0)
         {
-            if(!grid[coordinates.x, coordinates.y].northExit)
+
+        }
+        if (direction.ToLower().Contains("north"))
+        {
+            if(!currentLoc.northExit)
             {
                 return "*player cannot go that direction*";
+            }
+            // if monster blocks movement
+            else if(currentLoc.monsterBlocks == 1 && currentLoc.hasMonster > 0 && currentLoc.monsterHealth > 0)
+            {
+                return "*the monster blocks that direction*";
             }
             else
             {
@@ -172,20 +212,14 @@ public class GameStateSetter : MonoBehaviour
             {
                 return "*player cannot go that direction*";
             }
+            // if monster blocks movement
+            else if (currentLoc.monsterBlocks == 2 && currentLoc.hasMonster > 0 && currentLoc.monsterHealth > 0)
+            {
+                return "*the monster blocks that direction*";
+            }
             else
             {
                 coordinates.x += 1;
-            }
-        }
-        else if (direction.ToLower().Contains("west"))
-        {
-            if (!grid[coordinates.x, coordinates.y].westExit)
-            {
-                return "*player cannot go that direction*";
-            }
-            else
-            {
-                coordinates.y -= 1;
             }
         }
         else if (direction.ToLower().Contains("east"))
@@ -194,9 +228,30 @@ public class GameStateSetter : MonoBehaviour
             {
                 return "*player cannot go that direction*";
             }
+            // if monster blocks movement
+            else if (currentLoc.monsterBlocks == 3 && currentLoc.hasMonster > 0 && currentLoc.monsterHealth > 0)
+            {
+                return "*the monster blocks that direction*";
+            }
             else
             {
                 coordinates.y += 1;
+            }
+        }
+        else if (direction.ToLower().Contains("west"))
+        {
+            if (!grid[coordinates.x, coordinates.y].westExit)
+            {
+                return "*player cannot go that direction*";
+            }
+            // if monster blocks movement
+            else if (currentLoc.monsterBlocks == 4 && currentLoc.hasMonster > 0 && currentLoc.monsterHealth > 0)
+            {
+                return "*the monster blocks that direction*";
+            }
+            else
+            {
+                coordinates.y -= 1;
             }
         }
         else

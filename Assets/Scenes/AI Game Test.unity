@@ -306,7 +306,7 @@ MonoBehaviour:
   inputField: {fileID: 1431975176}
   outputText: {fileID: 657273888}
   imageGetter: {fileID: 1003018722}
-  displayImages: 1
+  displayImages: 0
   gameState: {fileID: 316748912}
 --- !u!1 &197509921
 GameObject:
