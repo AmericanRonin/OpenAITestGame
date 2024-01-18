@@ -79,7 +79,7 @@ public class SubmitControllerGame : MonoBehaviour
             Debug.Log("Got instuction from AI");
             if (response.ToLower().Contains("fight"))
             {
-                openAIGame.submitUserMessage("*the monster was deafeated*");
+                openAIGame.submitUserMessage(gameState.FightMonster());
             }
             else if (response.ToLower().Contains("inventory"))
             {

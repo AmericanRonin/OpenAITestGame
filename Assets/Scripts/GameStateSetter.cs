@@ -67,6 +67,31 @@ public class GameStateSetter : MonoBehaviour
         
     }
 
+    public string FightMonster()
+    {
+        if(grid[coordinates.x, coordinates.y].hasMonster > 0)
+        {
+            // TODO fight based on level of monster and level of weapon
+            grid[coordinates.x, coordinates.y].monsterHealth -= 3;
+            if(grid[coordinates.x, coordinates.y].monsterHealth <= 0)
+            {
+                grid[coordinates.x, coordinates.y].hasMonster = 0;
+                return "*monster was defeated*";
+            }
+            else
+            {
+                // TODO logic on monster attack
+                playerHealth -= 1;
+                return "*Monster damaged for 3 and has 2 health remaning. Player damaged for 1 and has 9 heatlh remaining.*";
+            }
+        }
+        else
+        {
+            return "*no monster to fight here*";
+        }
+    }
+
+
     public string GetCurrentLocation()
     {
         string description = "*Area " + coordinates.x + "." + coordinates.y + ": ";
