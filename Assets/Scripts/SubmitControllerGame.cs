@@ -7,6 +7,8 @@ public class SubmitControllerGame : MonoBehaviour
 {
     public OpenAIController openAIGame = null;
     public OpenAIController promptGetter = null;
+    public OpenAIController aiPlayer = null;
+    public bool useAIPlayer = false;
     public string promptInstructions = null;
     public TMP_InputField inputField = null;
     public TMP_Text outputText;
@@ -27,6 +29,10 @@ public class SubmitControllerGame : MonoBehaviour
         {
             promptGetter.onOpenAIResponse.AddListener(HandlePromptResponse);
         }
+        if(aiPlayer)
+        {
+            aiPlayer.onOpenAIResponse.AddListener(HandleAIPlayerResponse);
+        }
     }
 
     private void OnDisable()
@@ -35,6 +41,10 @@ public class SubmitControllerGame : MonoBehaviour
         if (promptGetter)
         {
             promptGetter.onOpenAIResponse.RemoveListener(HandlePromptResponse);
+        }
+        if (aiPlayer)
+        {
+            aiPlayer.onOpenAIResponse.AddListener(HandleAIPlayerResponse);
         }
     }
 
@@ -122,6 +132,10 @@ public class SubmitControllerGame : MonoBehaviour
                     openAIGame.submitUserMessage("*the goal is not in this area*");
                 }
             }
+            else if (response.ToLower().Contains("monster subdued"))
+            {
+                openAIGame.submitUserMessage(gameState.SubdueMonster());
+            }
             else
             {
                 string gridInfo = gameState.MovePlayer(response);
@@ -131,6 +145,11 @@ public class SubmitControllerGame : MonoBehaviour
         }
         else
         {
+            if(useAIPlayer && aiPlayer)
+            {
+                aiPlayer.submitUserMessage(response);
+            }
+
             outputText.text = response.Replace("\\n", "\n");
             if (displayImages)
             {
@@ -143,5 +162,12 @@ public class SubmitControllerGame : MonoBehaviour
     void HandlePromptResponse(string response)
     {
         imageGetter.SubmitImagePrompt(response);
+    }
+
+    void HandleAIPlayerResponse(string response)
+    {
+        inputField.text = response;
+
+        SubmitClicked();
     }
 }

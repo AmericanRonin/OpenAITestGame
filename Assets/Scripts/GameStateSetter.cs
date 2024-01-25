@@ -17,7 +17,7 @@ public class GameStateSetter : MonoBehaviour
         public int monsterBlocks;
     }
 
-    GridData[,] grid = new GridData[3, 3];
+    GridData[,] grid = new GridData[10, 10];
     Vector2Int coordinates = new Vector2Int(0,0);
 
     public int playerHealth = 10; // TODO: don't make public
@@ -25,6 +25,19 @@ public class GameStateSetter : MonoBehaviour
 
     // Start is called before the first frame update
     void Start()
+    {
+        ClearGrid();
+
+        GenerateGrid();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+
+    void ClearGrid()
     {
         // clear it all
         for (int i = 0; i < grid.GetLength(0); i++)
@@ -42,7 +55,11 @@ public class GameStateSetter : MonoBehaviour
                 grid[i, j].monsterBlocks = 0;
             }
         }
+    }
 
+    void GenerateGrid()
+    {
+        // manual grid for testing
         grid[0, 0].eastExit = true;
         grid[0, 0].southExit = true;
         grid[0, 1].westExit = true;
@@ -62,12 +79,6 @@ public class GameStateSetter : MonoBehaviour
         grid[2, 0].eastExit = true;
         grid[2, 2].westExit = true;
         grid[2, 2].containsGoal = true;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     public string FightMonster()
@@ -94,6 +105,26 @@ public class GameStateSetter : MonoBehaviour
         }
     }
 
+    public string SubdueMonster()
+    {
+        ref GridData currLoc = ref grid[coordinates.x, coordinates.y];
+        if (currLoc.hasMonster > 0)
+        {
+            if(currLoc.monsterBlocks > 0)
+            {
+                currLoc.monsterBlocks = 0;
+                return "*monster no longer blocks path*";
+            }
+            else
+            {
+                return "*monster was not blocking path*";
+            }
+        }
+        else
+        {
+            return "*no monster here*";
+        }
+    }
 
     public string GetCurrentLocation()
     {

@@ -295,6 +295,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   openAIGame: {fileID: 1373171925}
   promptGetter: {fileID: 1727452397}
+  aiPlayer: {fileID: 235701918}
+  useAIPlayer: 0
   promptInstructions: 'I need you to convert a description from a text game into
     a prompt for an AI image generator. Focus on what AI can easily make an image
     of and ignore parts about paths or exits. For instance, if the description was: 
@@ -452,6 +454,56 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: 30
   m_LayoutPriority: 1
+--- !u!1 &235701917
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 235701919}
+  - component: {fileID: 235701918}
+  m_Layer: 0
+  m_Name: AIPlayer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &235701918
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 235701917}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07acf92a1ed2bd245bf9d65baa4abd33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  model: gpt-4-1106-preview
+  startInstruction: I want you to simulate being a player of a text adventure game.
+    The next message you get will be the beginning of the adventure game, giving
+    short commands to the adventure game. Respond as if you are a player. Understood?
+  showFirst: 0
+  getter: {fileID: 1611787486}
+--- !u!4 &235701919
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 235701917}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 4.5524373, y: 4.2724004, z: 101.417915}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &316748911
 GameObject:
   m_ObjectHideFlags: 0
@@ -1262,46 +1314,43 @@ MonoBehaviour:
     the area such as what paths are available and what special items or character
     might be in the area, but you need to come up with most of the details (whether
     the players is in a forest or a cave or a castle, etc., and what the special
-    item or character is).  This part is very important: When you feel the player
-    has moved to another area, respond only with the direction the player has moved
-    surrounded in asterisks, e.g.,  *east*  and then wait for more instructions from
-    me about the new area before describing it for the player. Your response to me
-    should be the direction surrounded by asterisks and nothing else. If the player
-    tries to go in a direction I didn''t tell you was available, come up with a reason
-    the player can''t go that direction.  Further instructions from me (such as area
-    descriptions) will also be enclosed in asterisks. Anything not in asterisks is
-    interaction from the player.  Most importantly, give lots of details to the player
-    to make things interesting. I will give you only the barest details and you need
-    to come up with the rest of the game on the fly. For instance, if I give you
-    instructions like:  *you are in an area with a path to the north. there is a
-    monster there*  You should respond with something like:  You are in a dark forest
-    with trees looming all about. By a small shack nearby stands a fearsome goblin
-    staring at you. Beyond the goblin you can see a path through the trees to the
-    north.  If there is a monster at the location, I will say what level it is (such
-    as Level 1) as you come up with a monster appropriate for the setting. Do not
-    tell the player the monster level; that level is to help you know how fearsome
-    to make the monster (with Level 1 being the weakest).  If the player says it
-    wants to fight or attack the monster or anything similar, respond with *fight*
-    in asterisks and I''ll tell you the result of the attack, e.g.,  You say: *fight* 
-    And I''ll respond: *the monster lost 3 of 10 hit points and attacked the player,
-    damaging him for 2 of 10 hit points*  And then you describe that to the player
-    using your own language.  Never tell the player the numbers (such as "it''s a
-    Level 1 monster" or "the monster lost 3 hit points"). That''s simply for you
-    to help in the description. For instance, if I tell you the monster lost one
-    hit point out of ten, replay to the player, "The monster received a slight wound."
-    And if you are told a Level 1 monster is present, pick a small monster that fits
-    the scenario (such as a little alien bug if it''s scifi).  If the player asks
-    to check his inventory, respond to me with *inventory* and I will tell you what
-    the player has in vague terms and you come up with terms for it that fits the
-    scenario.  The goal of the game is to get the important item and use it on the
-    goal (it will be up to you to determine what that important item is and what
-    the goal is based on the game setting). I will tell you when the player is in
-    the area with the object and the area with the goal.  If the player asks to pick
-    up the important item, tell me *got item* in astericks so I can record that and
-    wait for a response before telling the player anything else.  If the player tries
-    to interact with the goal, tell me *use goal* in astericks and wait for my response
-    before telling the player what happens.  --  Here is the first area description
-    (others will look like this):  *Area 0,0: Exits available are south and east.* '
+    item or character is). There is an important item somewhere in the game and a
+    goal, and the player will need to pick up the important item and use it at the
+    goal to win the game. It will be up to you to determine what the important item
+    and goal are.  This part is very important: To help me know the game state, I
+    need to develop a way of communicating back and forth the player doesn''t see.
+    These will be statements to each other surrounded in asterisks. These responses
+    to each other should only contain the asterisk responses, and anything for the
+    player to see (or from the player to you) will be in a separate response.  For
+    instance, if the player has made an indication he or she wants to move in a direction
+    to the east, you respond with just:  *east*  And then wait for a further response
+    from me before you describe the next location to the player.  Here are the valid
+    commands you can send to me:  *north*, *south*, *west*, *east* : Indicate to
+    me the player has moved in that direction. Wait for me to give you a basic description
+    of the new area before describing it to the player.  *inventory* : if the player
+    says he wants to check what he has on him or anything similar, send this to me
+    and I''ll give a basic description of what the player has (and you''ll need to
+    give a more detailed description that fits the genre).  *fight* : If the player
+    says he wants to attack a monster, send this to me and I''ll describe the results
+    of the attack.  *monster subdued* :  Monsters block paths. If you have decided
+    the player has found a way to get past the monster without fighting, send me
+    this and wait for my response to tell the player what happened. If you don''t
+    send me this, I won''t know that the monster has stopped blocking the path and
+    the player will still not be allowed to move.  *got item* : If the player is
+    in the area with the important item and indicates to take it, send me this and
+    wait for my response.  *use goal* : If the player is in the area with the goal
+    and tries to use the important item with it, send me this and wait for my response. 
+    Those are all the commands you can send me.  Another important thing is I will
+    use numbers in descriptions to you like saying a monster is "Level 1" or saying
+    "the monster took 3 damage out of 5 health." You should never repeat these numbers
+    or say things like "Level 1" to the player but instead come up with appropriate
+    description, such as saying whether the monster took a light or severe wound
+    and instead of saying "Level 1 weapon" (the weakest weapon) say the player has
+    a wooden sword. Try to hide the game aspects from the player as much as possible. 
+    Now let''s get to the game.  --  The player''s starting inventory is a level
+    1 weapon and a healing item.  Here is the first area description (others will
+    look like this):  *Area 0,0: Exits available are south and east.*  Now pick a
+    setting and describe this location to the player.'
   showFirst: 1
   getter: {fileID: 1611787486}
 --- !u!4 &1373171926
@@ -2448,3 +2497,4 @@ SceneRoots:
   - {fileID: 1727452398}
   - {fileID: 316748913}
   - {fileID: 1611787487}
+  - {fileID: 235701919}
