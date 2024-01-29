@@ -16,6 +16,9 @@ public class SubmitControllerGame : MonoBehaviour
     public bool displayImages = true;
     public GameStateSetter gameState = null;
 
+    public string[] placeSettings = new string[] { "in a post-apocolyptic wasteland.", "in a fantasy setting.", "in a scifi setting.", "on an alien world.", "in a dungeon.",
+    "in an abandoned castle.", "in an abandoned space station.", "on a mysterious island.", "in a strangely empty city.", "in a labyrinth."};
+
     // Start is called before the first frame update
     void Start()
     {
@@ -33,6 +36,8 @@ public class SubmitControllerGame : MonoBehaviour
         {
             aiPlayer.onOpenAIResponse.AddListener(HandleAIPlayerResponse);
         }
+
+        openAIGame.startInstruction += "\\nMake this adventure take place " + placeSettings[Random.Range(0, placeSettings.Length)];
     }
 
     private void OnDisable()
