@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class SubmitControllerGame : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class SubmitControllerGame : MonoBehaviour
     public DALLEImageGetter imageGetter = null;
     public bool displayImages = true;
     public GameStateSetter gameState = null;
+    public ScrollRect textScroll;
 
     public string[] placeSettings = new string[] { "in a post-apocolyptic wasteland.", "in a fantasy setting.", "in a scifi setting.", "on an alien world.", "in a dungeon.",
     "in an abandoned castle.", "in an abandoned space station.", "on a mysterious island.", "in a strangely empty city.", "in a labyrinth."};
@@ -37,7 +39,11 @@ public class SubmitControllerGame : MonoBehaviour
             aiPlayer.onOpenAIResponse.AddListener(HandleAIPlayerResponse);
         }
 
-        openAIGame.startInstruction += "\\nMake this adventure take place " + placeSettings[Random.Range(0, placeSettings.Length)];
+        string genre = placeSettings[Random.Range(0, placeSettings.Length)];
+
+        openAIGame.startInstruction += "\\nMake this adventure take place " + genre;
+
+        Debug.Log(genre);
     }
 
     private void OnDisable()
@@ -68,6 +74,8 @@ public class SubmitControllerGame : MonoBehaviour
 
             outputText.text += "\n\n" + newMessage;
 
+            textScroll.verticalNormalizedPosition = 0; // send scroll bar to bottom
+
             openAIGame.submitUserMessage(newMessage);
         }
     }
@@ -87,6 +95,8 @@ public class SubmitControllerGame : MonoBehaviour
 
                 imageGetter.SubmitImagePrompt(textInBrackets);
                 outputText.text = textAfterBrackets.Replace("\\n","\n");
+
+                textScroll.verticalNormalizedPosition = 1; // reset scroll bar back to top
             }
         }
         else if(response[0] == '*')
@@ -156,6 +166,7 @@ public class SubmitControllerGame : MonoBehaviour
             }
 
             outputText.text = response.Replace("\\n", "\n");
+            textScroll.verticalNormalizedPosition = 1; // reset scroll bar back to top
             if (displayImages)
             {
                 promptGetter.resetChat();

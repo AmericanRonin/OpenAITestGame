@@ -310,6 +310,15 @@ MonoBehaviour:
   imageGetter: {fileID: 1003018722}
   displayImages: 0
   gameState: {fileID: 316748912}
+  textScroll: {fileID: 197509923}
+  placeSettings:
+  - in a post-apocolyptic wasteland.
+  - in a fantasy setting.
+  - in a scifi setting.
+  - on an alien world.
+  - in a dungeon.
+  - in an abandoned castle.
+  - in an abandoned space station.
 --- !u!1 &197509921
 GameObject:
   m_ObjectHideFlags: 0
@@ -483,7 +492,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07acf92a1ed2bd245bf9d65baa4abd33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  model: gpt-4-1106-preview
+  model: gpt-4-turbo-preview
   startInstruction: I want you to simulate being a player of a text adventure game.
     The next message you get will be the beginning of the adventure game, giving
     short commands to the adventure game. Respond as if you are a player. Understood?
@@ -1306,7 +1315,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07acf92a1ed2bd245bf9d65baa4abd33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  model: gpt-4-1106-preview
+  model: gpt-4-turbo-preview
   startInstruction: 'You are now a text adventure prompt for a game called Infinite
     Adventure. I will give you the skeleton of the boundaries of the game and input
     from the player, and it will be up to you to define the game and respond to the
@@ -1957,7 +1966,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07acf92a1ed2bd245bf9d65baa4abd33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  model: gpt-4-1106-preview
+  model: gpt-4-turbo-preview
   startInstruction: 
   showFirst: 0
   getter: {fileID: 1611787486}
