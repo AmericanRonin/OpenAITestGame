@@ -308,7 +308,7 @@ MonoBehaviour:
   inputField: {fileID: 1431975176}
   outputText: {fileID: 657273888}
   imageGetter: {fileID: 1003018722}
-  displayImages: 0
+  displayImages: 1
   gameState: {fileID: 316748912}
   textScroll: {fileID: 197509923}
   placeSettings:

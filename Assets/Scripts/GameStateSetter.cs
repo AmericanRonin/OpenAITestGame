@@ -126,6 +126,22 @@ public class GameStateSetter : MonoBehaviour
         }
     }
 
+    public string getItem()
+    {
+        ref GridData currLocR = ref GetCurrentloactionDataRef();
+        //GetCurrentloactionDataRef();
+        if (currLocR.containsItem)
+        {
+            hasImportantItem = true;
+            currLocR.containsItem = false;
+            return "*player obtains item*";
+        }
+        else
+        {
+            return "*item is not at this location*";
+        }
+    }
+
     public string GetCurrentLocation()
     {
         GridData currentLoc = GetCurrentLocationData();
@@ -210,6 +226,11 @@ public class GameStateSetter : MonoBehaviour
     public GridData GetCurrentLocationData()
     {
         return grid[coordinates.x, coordinates.y];
+    }
+
+    private ref GridData GetCurrentloactionDataRef()
+    {
+        return ref grid[coordinates.x, coordinates.y];
     }
 
     public string MovePlayer(string direction)

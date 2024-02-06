@@ -118,16 +118,7 @@ public class SubmitControllerGame : MonoBehaviour
             }
             else if (response.ToLower().Contains("got item"))
             {
-                if(gameState.GetCurrentLocationData().containsItem)
-                {
-                    openAIGame.submitUserMessage("*player obtains item*");
-                    gameState.hasImportantItem = true;
-                    // TODO: need to set that item no longer at this location
-                }
-                else
-                {
-                    openAIGame.submitUserMessage("*item is not at this location*");
-                }
+                openAIGame.submitUserMessage(gameState.getItem());
             }
             else if (response.ToLower().Contains("use goal"))
             {
