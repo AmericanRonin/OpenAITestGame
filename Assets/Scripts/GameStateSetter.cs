@@ -15,10 +15,13 @@ public class GameStateSetter : MonoBehaviour
         public int hasMonster;
         public int monsterHealth;
         public int monsterBlocks;
+        public bool active;
     }
 
     GridData[,] grid = new GridData[10, 10];
     Vector2Int coordinates = new Vector2Int(0,0);
+
+    Vector2Int startLocation;
 
     public int playerHealth = 10; // TODO: don't make public
     public bool hasImportantItem = false;
@@ -28,7 +31,9 @@ public class GameStateSetter : MonoBehaviour
     {
         ClearGrid();
 
-        GenerateGrid();
+        //GenerateManualGrid();
+
+        GenerateRandomGrid();
     }
 
     // Update is called once per frame
@@ -53,11 +58,12 @@ public class GameStateSetter : MonoBehaviour
                 grid[i, j].hasMonster = 0;
                 grid[i, j].monsterHealth = 0;
                 grid[i, j].monsterBlocks = 0;
+                grid[i, j].active = false;
             }
         }
     }
 
-    void GenerateGrid()
+    void GenerateManualGrid()
     {
         // manual grid for testing
         grid[0, 0].eastExit = true;
@@ -79,6 +85,173 @@ public class GameStateSetter : MonoBehaviour
         grid[2, 0].eastExit = true;
         grid[2, 2].westExit = true;
         grid[2, 2].containsGoal = true;
+    }
+
+    struct RandomWalker
+    {
+        public int dir;
+        public Vector2Int pos;
+    }
+    List<RandomWalker> walkers;
+
+    int maxIterations = 10;
+
+    float chanceWalkerChangeDir = 0.5f;
+    float chanceWalkerSpawn = 0.5f;
+    float chanceWalkerDestoy = 0.01f;
+    int maxWalkers = 10;
+    float percentToFill = 0.09f;
+
+    void GenerateRandomGrid()
+    {
+        startLocation = new Vector2Int(grid.GetLength(0) / 2, grid.GetLength(1) / 2); // start in middle
+
+        walkers = new List<RandomWalker>();
+
+        RandomWalker firstWalker = new RandomWalker();
+        RandomWalker secondWalker = new RandomWalker();
+
+        firstWalker.pos = new Vector2Int(startLocation.x, startLocation.y);
+        firstWalker.dir = Random.Range(0, 4);
+
+        secondWalker.pos = new Vector2Int(startLocation.x, startLocation.y);
+        secondWalker.dir = Random.Range(0, 4);
+
+        walkers.Add(firstWalker);
+        walkers.Add(secondWalker);
+
+        grid[startLocation.x, startLocation.y].active = true;
+
+        int iterations = 0;
+        do
+        {
+            // chance destroy walker
+            int numberChecks = walkers.Count;
+            for (int i = 0; i < numberChecks; i++)
+            {
+                if (Random.value < chanceWalkerDestoy && walkers.Count > 1)
+                {
+                    walkers.RemoveAt(i);
+                    break;
+                }
+            }
+
+            //chance: Walker pick new direction
+            for (int i = 0; i < walkers.Count; i++)
+            {
+                if (Random.value < chanceWalkerChangeDir)
+                {
+                    RandomWalker thisWalker = walkers[i];
+                    thisWalker.dir = Random.Range(0, 4);
+                    walkers[i] = thisWalker;
+                }
+            }
+
+            //chance: spawn new Walker
+            numberChecks = walkers.Count;
+            for (int i = 0; i < numberChecks; i++)
+            {
+                if (Random.value < chanceWalkerSpawn && walkers.Count < maxWalkers)
+                {
+                    RandomWalker walker = new RandomWalker();
+                    walker.dir = Random.Range(0, 4);
+                    walker.pos = new Vector2Int(walkers[i].pos.x, walkers[i].pos.y);
+                    walkers.Add(walker);
+                }
+            }
+
+            //move Walkers
+            for (int i = 0; i < walkers.Count; i++)
+            {
+                RandomWalker walker = walkers[i];
+
+                switch(walker.dir)
+                {
+                    case 0: // north
+                        // check check first if it can move this direction
+                        if(walker.pos.y != 0)
+                        {
+                            // make path to north
+                            grid[walker.pos.x, walker.pos.y].northExit = true;
+
+                            // move north, make sure room is listed as active, and make path back south
+                            walker.pos.y -= 1;
+                            grid[walker.pos.x, walker.pos.y].active = true;
+                            grid[walker.pos.x, walker.pos.y].southExit = true;
+                        }
+                        break;
+                    case 1: // south
+                        // check check first if it can move this direction
+                        if (walker.pos.y != grid.GetLength(1)-1)
+                        {
+                            // make path to south
+                            grid[walker.pos.x, walker.pos.y].southExit = true;
+
+                            // move north, make sure room is listed as active, and make path back north
+                            walker.pos.y += 1;
+                            grid[walker.pos.x, walker.pos.y].active = true;
+                            grid[walker.pos.x, walker.pos.y].northExit = true;
+                        }
+                        break;
+                    case 2: // west
+                        // check check first if it can move this direction
+                        if (walker.pos.x != 0)
+                        {
+                            // make path to west
+                            grid[walker.pos.x, walker.pos.y].westExit = true;
+
+                            // move west, make sure room is listed as active, and make path back east
+                            walker.pos.x -= 1;
+                            grid[walker.pos.x, walker.pos.y].active = true;
+                            grid[walker.pos.x, walker.pos.y].eastExit = true;
+                        }
+                        break;
+                    case 3: // east
+                        // check check first if it can move this direction
+                        if (walker.pos.x != grid.GetLength(0) - 1)
+                        {
+                            // make path to east
+                            grid[walker.pos.x, walker.pos.y].eastExit = true;
+
+                            // move east, make sure room is listed as active, and make path back west
+                            walker.pos.x += 1;
+                            grid[walker.pos.x, walker.pos.y].active = true;
+                            grid[walker.pos.x, walker.pos.y].westExit = true;
+                        }
+                        break;
+                }
+
+                walkers[i] = walker;
+            }
+
+            //check to exit loop
+            int numberOfRooms = 0;
+        
+            // count rooms
+            for (int i = 0; i < grid.GetLength(0); i++)
+            {
+                for (int j = 0; j < grid.GetLength(1); j++)
+                {
+                    if(grid[i,j].active)
+                    {
+                        numberOfRooms++;
+                    }
+                }
+            }
+
+            if ((float)numberOfRooms / (float)grid.Length >= percentToFill)
+            {
+                Debug.Log("Rooms are " + numberOfRooms);
+                break;
+            }
+
+            iterations++;
+        } while (iterations < maxIterations);
+
+        Debug.Log("iterations " + iterations);
+
+        coordinates.x = startLocation.x;
+        coordinates.y = startLocation.y;
     }
 
     public string FightMonster()
@@ -208,6 +381,7 @@ public class GameStateSetter : MonoBehaviour
                 description += " and";
             }
             description += " east";
+            previousExit = true;
         }
         if (grid[coordinates.x, coordinates.y].westExit)
         {
@@ -216,7 +390,6 @@ public class GameStateSetter : MonoBehaviour
                 description += " and";
             }
             description += " west";
-            previousExit = true;
         }
 
         description += "*";
@@ -255,7 +428,7 @@ public class GameStateSetter : MonoBehaviour
             }
             else
             {
-                coordinates.x -= 1;
+                coordinates.y -= 1;
             }
         }
         else if(direction.ToLower().Contains("south"))
@@ -271,7 +444,7 @@ public class GameStateSetter : MonoBehaviour
             }
             else
             {
-                coordinates.x += 1;
+                coordinates.y += 1;
             }
         }
         else if (direction.ToLower().Contains("east"))
@@ -287,7 +460,7 @@ public class GameStateSetter : MonoBehaviour
             }
             else
             {
-                coordinates.y += 1;
+                coordinates.x += 1;
             }
         }
         else if (direction.ToLower().Contains("west"))
@@ -303,7 +476,7 @@ public class GameStateSetter : MonoBehaviour
             }
             else
             {
-                coordinates.y -= 1;
+                coordinates.x -= 1;
             }
         }
         else

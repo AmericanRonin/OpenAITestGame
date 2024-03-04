@@ -18,14 +18,8 @@ public class SubmitControllerGame : MonoBehaviour
     public GameStateSetter gameState = null;
     public ScrollRect textScroll;
 
-    public string[] placeSettings = new string[] { "in a post-apocolyptic wasteland.", "in a fantasy setting.", "in a scifi setting.", "on an alien world.", "in a dungeon.",
+    private string[] placeSettings = new string[] { "in a post-apocolyptic wasteland.", "in a fantasy setting.", "in a scifi setting.", "on an alien world.", "in a dungeon.",
     "in an abandoned castle.", "in an abandoned space station.", "on a mysterious island.", "in a strangely empty city.", "in a labyrinth."};
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
     private void OnEnable()
     {
@@ -38,12 +32,6 @@ public class SubmitControllerGame : MonoBehaviour
         {
             aiPlayer.onOpenAIResponse.AddListener(HandleAIPlayerResponse);
         }
-
-        string genre = placeSettings[Random.Range(0, placeSettings.Length)];
-
-        openAIGame.startInstruction += "\\nMake this adventure take place " + genre;
-
-        Debug.Log(genre);
     }
 
     private void OnDisable()
@@ -57,6 +45,24 @@ public class SubmitControllerGame : MonoBehaviour
         {
             aiPlayer.onOpenAIResponse.AddListener(HandleAIPlayerResponse);
         }
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        string curLocDesc = gameState.GetCurrentLocation();
+
+        Debug.Log(curLocDesc);
+
+        openAIGame.startInstruction += "\\n" + curLocDesc;
+
+        string genre = placeSettings[Random.Range(0, placeSettings.Length)];
+
+        openAIGame.startInstruction += "\\nMake this adventure take place " + genre;
+
+        Debug.Log(genre);
+
+        openAIGame.SendStartMessage();
     }
 
     // Update is called once per frame

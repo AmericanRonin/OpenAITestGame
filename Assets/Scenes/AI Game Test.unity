@@ -311,14 +311,6 @@ MonoBehaviour:
   displayImages: 1
   gameState: {fileID: 316748912}
   textScroll: {fileID: 197509923}
-  placeSettings:
-  - in a post-apocolyptic wasteland.
-  - in a fantasy setting.
-  - in a scifi setting.
-  - on an alien world.
-  - in a dungeon.
-  - in an abandoned castle.
-  - in an abandoned space station.
 --- !u!1 &197509921
 GameObject:
   m_ObjectHideFlags: 0
@@ -498,6 +490,7 @@ MonoBehaviour:
     short commands to the adventure game. Respond as if you are a player. Understood?
   showFirst: 0
   getter: {fileID: 1611787486}
+  submitOnStart: 1
 --- !u!4 &235701919
 Transform:
   m_ObjectHideFlags: 0
@@ -1358,10 +1351,10 @@ MonoBehaviour:
     a wooden sword. Try to hide the game aspects from the player as much as possible. 
     Now let''s get to the game.  --  The player''s starting inventory is a level
     1 weapon and a healing item.  Here is the first area description (others will
-    look like this):  *Area 0,0: Exits available are south and east.*  Now pick a
-    setting and describe this location to the player.'
+    look like this):'
   showFirst: 1
   getter: {fileID: 1611787486}
+  submitOnStart: 0
 --- !u!4 &1373171926
 Transform:
   m_ObjectHideFlags: 0
@@ -1970,6 +1963,7 @@ MonoBehaviour:
   startInstruction: 
   showFirst: 0
   getter: {fileID: 1611787486}
+  submitOnStart: 1
 --- !u!4 &1727452398
 Transform:
   m_ObjectHideFlags: 0

@@ -609,7 +609,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07acf92a1ed2bd245bf9d65baa4abd33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  model: gpt-3.5-turbo
+  model: gpt-4-1106-preview
   startInstruction: I need you to be the AI for an NPC in a video game. It is important
     you never drop character. You are a human named Gary who lives in a dystopic
     future where AI has destroyed much of the world and there is nothing you hate
@@ -1082,7 +1082,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07acf92a1ed2bd245bf9d65baa4abd33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  model: gpt-3.5-turbo
+  model: gpt-4-1106-preview
   startInstruction: I need you to be the AI for an NPC in a video game. It is important
     you never drop character. You are a human named Steve who lives in a dystopic
     future where AI has destroyed much of the world and there is nothing you hate

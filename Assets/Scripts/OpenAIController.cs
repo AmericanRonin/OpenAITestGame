@@ -13,6 +13,7 @@ public class OpenAIController : MonoBehaviour
     public string startInstruction = null;
     public bool showFirst = false;
     public APIKeyGetter getter = null;
+    public bool submitOnStart = true;
 
     string apiKey = null;
 
@@ -41,7 +42,7 @@ public class OpenAIController : MonoBehaviour
     {
         apiKey = getter.GetAPIKey();
 
-        if (startInstruction != null && startInstruction != "")
+        if (startInstruction != null && startInstruction != "" && submitOnStart)
         {
             messages.Add(new ChatMessage(startInstruction, "user"));
             StartCoroutine(GetRequest(showFirst));
@@ -52,6 +53,15 @@ public class OpenAIController : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void SendStartMessage()
+    {
+        if (startInstruction != null && startInstruction != "")
+        {
+            messages.Add(new ChatMessage(startInstruction, "user"));
+            StartCoroutine(GetRequest(showFirst));
+        }
     }
 
     public void submitUserMessage(string message)
