@@ -100,7 +100,7 @@ public class GameStateSetter : MonoBehaviour
     float chanceWalkerSpawn = 0.5f;
     float chanceWalkerDestoy = 0.01f;
     int maxWalkers = 10;
-    float percentToFill = 0.09f;
+    float percentToFill = 0.06f;
 
     void GenerateRandomGrid()
     {
@@ -165,11 +165,11 @@ public class GameStateSetter : MonoBehaviour
             {
                 RandomWalker walker = walkers[i];
 
-                switch(walker.dir)
+                switch (walker.dir)
                 {
                     case 0: // north
                         // check check first if it can move this direction
-                        if(walker.pos.y != 0)
+                        if (walker.pos.y != 0)
                         {
                             // make path to north
                             grid[walker.pos.x, walker.pos.y].northExit = true;
@@ -182,7 +182,7 @@ public class GameStateSetter : MonoBehaviour
                         break;
                     case 1: // south
                         // check check first if it can move this direction
-                        if (walker.pos.y != grid.GetLength(1)-1)
+                        if (walker.pos.y != grid.GetLength(1) - 1)
                         {
                             // make path to south
                             grid[walker.pos.x, walker.pos.y].southExit = true;
@@ -226,13 +226,13 @@ public class GameStateSetter : MonoBehaviour
 
             //check to exit loop
             int numberOfRooms = 0;
-        
+
             // count rooms
             for (int i = 0; i < grid.GetLength(0); i++)
             {
                 for (int j = 0; j < grid.GetLength(1); j++)
                 {
-                    if(grid[i,j].active)
+                    if (grid[i, j].active)
                     {
                         numberOfRooms++;
                     }
@@ -250,6 +250,62 @@ public class GameStateSetter : MonoBehaviour
 
         Debug.Log("iterations " + iterations);
 
+        // add room features
+        int randX;
+        int randY;
+
+        // add goal
+        do
+        {
+            randX = Random.Range(0, grid.GetLength(0));
+            randY = Random.Range(0, grid.GetLength(1));
+        } while (randX == startLocation.x && randY == startLocation.y || !grid[randX, randY].active); // make not starting room and is active
+        grid[randX, randY].containsGoal = true;
+
+        // add goal item
+        do
+        {
+            randX = Random.Range(0, grid.GetLength(0));
+            randY = Random.Range(0, grid.GetLength(1));
+        } while (randX == startLocation.x && randY == startLocation.y || !grid[randX, randY].active ||
+            grid[randX, randY].containsGoal); // make not starting room or contains goal
+        grid[randX, randY].containsItem = true;
+
+        // add one monster for now
+        do
+        {
+            randX = Random.Range(0, grid.GetLength(0));
+            randY = Random.Range(0, grid.GetLength(1));
+        } while (randX == startLocation.x && randY == startLocation.y || !grid[randX, randY].active ||
+            grid[randX, randY].containsGoal || grid[randX, randY].containsItem); // make not starting room or contains goal or contains item TODO: let monster guard item
+        // level 1 monster
+        grid[randX, randY].hasMonster = 1;
+        grid[randX, randY].monsterHealth = 5;
+
+        // pick direction it blocks; make sure it's an exit
+        do
+        {
+            grid[randX, randY].monsterBlocks = Random.Range(1, 5);
+
+            if(grid[randX, randY].monsterBlocks == 1 && grid[randX, randY].northExit)
+            {
+                break;
+            }
+            else if (grid[randX, randY].monsterBlocks == 2 && grid[randX, randY].southExit)
+            {
+                break;
+            }
+            else if (grid[randX, randY].monsterBlocks == 3 && grid[randX, randY].westExit)
+            {
+                break;
+            }
+            else if (grid[randX, randY].monsterBlocks == 4 && grid[randX, randY].eastExit)
+            {
+                break;
+            }
+        } while (true);
+
+        // set play coordinates to start room
         coordinates.x = startLocation.x;
         coordinates.y = startLocation.y;
     }
@@ -345,10 +401,10 @@ public class GameStateSetter : MonoBehaviour
                         description += "south";
                         break;
                     case 3:
-                        description += "east";
+                        description += "west";
                         break;
                     case 4:
-                        description += "west";
+                        description += "east";
                         break;
                 }
 
@@ -374,15 +430,6 @@ public class GameStateSetter : MonoBehaviour
             description += " south";
             previousExit = true;
         }
-        if (grid[coordinates.x, coordinates.y].eastExit)
-        {
-            if (previousExit)
-            {
-                description += " and";
-            }
-            description += " east";
-            previousExit = true;
-        }
         if (grid[coordinates.x, coordinates.y].westExit)
         {
             if (previousExit)
@@ -390,7 +437,17 @@ public class GameStateSetter : MonoBehaviour
                 description += " and";
             }
             description += " west";
+            previousExit = true;
         }
+        if (grid[coordinates.x, coordinates.y].eastExit)
+        {
+            if (previousExit)
+            {
+                description += " and";
+            }
+            description += " east";
+        }
+        
 
         description += "*";
         return description;
@@ -447,9 +504,9 @@ public class GameStateSetter : MonoBehaviour
                 coordinates.y += 1;
             }
         }
-        else if (direction.ToLower().Contains("east"))
+        else if (direction.ToLower().Contains("west"))
         {
-            if (!grid[coordinates.x, coordinates.y].eastExit)
+            if (!grid[coordinates.x, coordinates.y].westExit)
             {
                 return "*player cannot go that direction*";
             }
@@ -460,12 +517,12 @@ public class GameStateSetter : MonoBehaviour
             }
             else
             {
-                coordinates.x += 1;
+                coordinates.x -= 1;
             }
         }
-        else if (direction.ToLower().Contains("west"))
+        else if (direction.ToLower().Contains("east"))
         {
-            if (!grid[coordinates.x, coordinates.y].westExit)
+            if (!grid[coordinates.x, coordinates.y].eastExit)
             {
                 return "*player cannot go that direction*";
             }
@@ -476,7 +533,7 @@ public class GameStateSetter : MonoBehaviour
             }
             else
             {
-                coordinates.x -= 1;
+                coordinates.x += 1;
             }
         }
         else
